@@ -25,9 +25,7 @@ public class CompilationUnitCache extends Indexer {
 	private LinkedList<ITypeRoot> iTypeRootList;
 	private LinkedList<CompilationUnit> compilationUnitList;
 	private List<ITypeRoot> lockedTypeRoots;
-	private Set<ICompilationUnit> changedCompilationUnits;
-	private Set<ICompilationUnit> addedCompilationUnits;
-	private Set<ICompilationUnit> removedCompilationUnits;
+
 	//String key corresponds to MethodDeclaration.resolveBinding.getKey()
 	private Map<String, LinkedHashSet<AbstractVariable>> usedFieldsForMethodExpressionMap;
 	//String key corresponds to MethodDeclaration.resolveBinding.getKey()
@@ -107,9 +105,6 @@ public class CompilationUnitCache extends Indexer {
 		this.iTypeRootList = new LinkedList<ITypeRoot>();
 		this.lockedTypeRoots = new ArrayList<ITypeRoot>();
 		this.compilationUnitList = new LinkedList<CompilationUnit>();
-		this.changedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-		this.addedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-		this.removedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
 		this.usedFieldsForMethodExpressionMap = new HashMap<String, LinkedHashSet<AbstractVariable>>();
 		this.definedFieldsForMethodExpressionMap = new HashMap<String, LinkedHashSet<AbstractVariable>>();
 		this.thrownExceptionTypesForMethodExpressionMap = new HashMap<String, LinkedHashSet<String>>();
@@ -169,49 +164,6 @@ public class CompilationUnitCache extends Indexer {
 		}
 	}
 
-	public void compilationUnitChanged(ICompilationUnit compilationUnit) {
-		try {
-			if(compilationUnit.getCorrespondingResource() != null) {
-				changedCompilationUnits.add(compilationUnit);
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void compilationUnitAdded(ICompilationUnit compilationUnit) {
-		try {
-			if(compilationUnit.getCorrespondingResource() != null) {
-				addedCompilationUnits.add(compilationUnit);
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void compilationUnitRemoved(ICompilationUnit compilationUnit) {
-		try {
-			if(compilationUnit.getCorrespondingResource() != null) {
-				addedCompilationUnits.remove(compilationUnit);
-				removedCompilationUnits.add(compilationUnit);
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public Set<ICompilationUnit> getChangedCompilationUnits() {
-		return changedCompilationUnits;
-	}
-
-	public Set<ICompilationUnit> getAddedCompilationUnits() {
-		return addedCompilationUnits;
-	}
-
-	public Set<ICompilationUnit> getRemovedCompilationUnits() {
-		return removedCompilationUnits;
-	}
-
 	public void lock(ITypeRoot iTypeRoot) {
 		if(!lockedTypeRoots.contains(iTypeRoot))
 			lockedTypeRoots.add(iTypeRoot);
@@ -223,26 +175,6 @@ public class CompilationUnitCache extends Indexer {
 		definedFieldsForMethodArgumentsMap.clear();
 		usedFieldsForMethodExpressionMap.clear();
 		definedFieldsForMethodExpressionMap.clear();
-	}
-
-	public void clearAffectedCompilationUnits() {
-		changedCompilationUnits.clear();
-		addedCompilationUnits.clear();
-		removedCompilationUnits.clear();
-	}
-
-	public Set<IJavaProject> getAffectedProjects() {
-		Set<IJavaProject> affectedProjects = new LinkedHashSet<IJavaProject>();
-		for(ICompilationUnit cu : changedCompilationUnits) {
-			affectedProjects.add(cu.getJavaProject());
-		}
-		for(ICompilationUnit cu : addedCompilationUnits) {
-			affectedProjects.add(cu.getJavaProject());
-		}
-		for(ICompilationUnit cu : removedCompilationUnits) {
-			affectedProjects.add(cu.getJavaProject());
-		}
-		return affectedProjects;
 	}
 
 	public void clearCache() {

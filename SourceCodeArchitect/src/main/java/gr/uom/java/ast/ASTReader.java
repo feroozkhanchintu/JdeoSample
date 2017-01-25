@@ -61,90 +61,90 @@ public class ASTReader {
 	private static IJavaProject examinedProject;
 	public static final int JLS = AST.JLS8;
 
-	public ASTReader(IJavaProject iJavaProject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
-		List<IMarker> markers = buildProject(iJavaProject, monitor);
-		if(!markers.isEmpty()) {
-			throw new CompilationErrorDetectedException(markers);
-		}
-		if(monitor != null)
-			monitor.beginTask("Parsing selected Java Project", getNumberOfCompilationUnits(iJavaProject));
-		systemObject = new SystemObject();
-		examinedProject = iJavaProject;
-		try {
-			IPackageFragmentRoot[] iPackageFragmentRoots = iJavaProject.getPackageFragmentRoots();
-			for(IPackageFragmentRoot iPackageFragmentRoot : iPackageFragmentRoots) {
-				IJavaElement[] children = iPackageFragmentRoot.getChildren();
-				for(IJavaElement child : children) {
-					if(child.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-						IPackageFragment iPackageFragment = (IPackageFragment)child;
-						ICompilationUnit[] iCompilationUnits = iPackageFragment.getCompilationUnits();
-						for(ICompilationUnit iCompilationUnit : iCompilationUnits) {
-							if(monitor != null && monitor.isCanceled())
-				    			throw new OperationCanceledException();
-							systemObject.addClasses(parseAST(iCompilationUnit));
-							if(monitor != null)
-								monitor.worked(1);
-						}
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		if(monitor != null)
-			monitor.done();
-	}
-
-	public ASTReader(IJavaProject iJavaProject, SystemObject existingSystemObject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
-		List<IMarker> markers = buildProject(iJavaProject, monitor);
-		if(!markers.isEmpty()) {
-			throw new CompilationErrorDetectedException(markers);
-		}
-		Set<ICompilationUnit> changedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-		Set<ICompilationUnit> addedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-		Set<ICompilationUnit> removedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-		CompilationUnitCache instance = CompilationUnitCache.getInstance();
-		for(ICompilationUnit changedCompilationUnit : instance.getChangedCompilationUnits()) {
-			if(changedCompilationUnit.getJavaProject().equals(iJavaProject))
-				changedCompilationUnits.add(changedCompilationUnit);
-		}
-		for(ICompilationUnit addedCompilationUnit : instance.getAddedCompilationUnits()) {
-			if(addedCompilationUnit.getJavaProject().equals(iJavaProject))
-				addedCompilationUnits.add(addedCompilationUnit);
-		}
-		for(ICompilationUnit removedCompilationUnit : instance.getRemovedCompilationUnits()) {
-			if(removedCompilationUnit.getJavaProject().equals(iJavaProject))
-				removedCompilationUnits.add(removedCompilationUnit);
-		}
-		if(monitor != null)
-			monitor.beginTask("Parsing changed/added Compilation Units",
-					changedCompilationUnits.size() + addedCompilationUnits.size());
-		systemObject = existingSystemObject;
-		examinedProject = iJavaProject;
-		for(ICompilationUnit removedCompilationUnit : removedCompilationUnits) {
-			IFile removedCompilationUnitFile = (IFile)removedCompilationUnit.getResource();
-			systemObject.removeClasses(removedCompilationUnitFile);
-		}
-		for(ICompilationUnit changedCompilationUnit : changedCompilationUnits) {
-			List<ClassObject> changedClassObjects = parseAST(changedCompilationUnit);
-			for(ClassObject changedClassObject : changedClassObjects) {
-				systemObject.replaceClass(changedClassObject);
-			}
-			if(monitor != null)
-				monitor.worked(1);
-		}
-		for(ICompilationUnit addedCompilationUnit : addedCompilationUnits) {
-			List<ClassObject> addedClassObjects = parseAST(addedCompilationUnit);
-			for(ClassObject addedClassObject : addedClassObjects) {
-				systemObject.addClass(addedClassObject);
-			}
-			if(monitor != null)
-				monitor.worked(1);
-		}
-		instance.clearAffectedCompilationUnits();
-		if(monitor != null)
-			monitor.done();
-	}
+//	public ASTReader(IJavaProject iJavaProject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
+//		List<IMarker> markers = buildProject(iJavaProject, monitor);
+//		if(!markers.isEmpty()) {
+//			throw new CompilationErrorDetectedException(markers);
+//		}
+//		if(monitor != null)
+//			monitor.beginTask("Parsing selected Java Project", getNumberOfCompilationUnits(iJavaProject));
+//		systemObject = new SystemObject();
+//		examinedProject = iJavaProject;
+//		try {
+//			IPackageFragmentRoot[] iPackageFragmentRoots = iJavaProject.getPackageFragmentRoots();
+//			for(IPackageFragmentRoot iPackageFragmentRoot : iPackageFragmentRoots) {
+//				IJavaElement[] children = iPackageFragmentRoot.getChildren();
+//				for(IJavaElement child : children) {
+//					if(child.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
+//						IPackageFragment iPackageFragment = (IPackageFragment)child;
+//						ICompilationUnit[] iCompilationUnits = iPackageFragment.getCompilationUnits();
+//						for(ICompilationUnit iCompilationUnit : iCompilationUnits) {
+//							if(monitor != null && monitor.isCanceled())
+//				    			throw new OperationCanceledException();
+//							systemObject.addClasses(parseAST(iCompilationUnit));
+//							if(monitor != null)
+//								monitor.worked(1);
+//						}
+//					}
+//				}
+//			}
+//		} catch (JavaModelException e) {
+//			e.printStackTrace();
+//		}
+//		if(monitor != null)
+//			monitor.done();
+//	}
+//
+//	public ASTReader(IJavaProject iJavaProject, SystemObject existingSystemObject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
+//		List<IMarker> markers = buildProject(iJavaProject, monitor);
+//		if(!markers.isEmpty()) {
+//			throw new CompilationErrorDetectedException(markers);
+//		}
+//		Set<ICompilationUnit> changedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
+//		Set<ICompilationUnit> addedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
+//		Set<ICompilationUnit> removedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
+//		CompilationUnitCache instance = CompilationUnitCache.getInstance();
+//		for(ICompilationUnit changedCompilationUnit : instance.getChangedCompilationUnits()) {
+//			if(changedCompilationUnit.getJavaProject().equals(iJavaProject))
+//				changedCompilationUnits.add(changedCompilationUnit);
+//		}
+//		for(ICompilationUnit addedCompilationUnit : instance.getAddedCompilationUnits()) {
+//			if(addedCompilationUnit.getJavaProject().equals(iJavaProject))
+//				addedCompilationUnits.add(addedCompilationUnit);
+//		}
+//		for(ICompilationUnit removedCompilationUnit : instance.getRemovedCompilationUnits()) {
+//			if(removedCompilationUnit.getJavaProject().equals(iJavaProject))
+//				removedCompilationUnits.add(removedCompilationUnit);
+//		}
+//		if(monitor != null)
+//			monitor.beginTask("Parsing changed/added Compilation Units",
+//					changedCompilationUnits.size() + addedCompilationUnits.size());
+//		systemObject = existingSystemObject;
+//		examinedProject = iJavaProject;
+//		for(ICompilationUnit removedCompilationUnit : removedCompilationUnits) {
+//			IFile removedCompilationUnitFile = (IFile)removedCompilationUnit.getResource();
+//			systemObject.removeClasses(removedCompilationUnitFile);
+//		}
+//		for(ICompilationUnit changedCompilationUnit : changedCompilationUnits) {
+//			List<ClassObject> changedClassObjects = parseAST(changedCompilationUnit);
+//			for(ClassObject changedClassObject : changedClassObjects) {
+//				systemObject.replaceClass(changedClassObject);
+//			}
+//			if(monitor != null)
+//				monitor.worked(1);
+//		}
+//		for(ICompilationUnit addedCompilationUnit : addedCompilationUnits) {
+//			List<ClassObject> addedClassObjects = parseAST(addedCompilationUnit);
+//			for(ClassObject addedClassObject : addedClassObjects) {
+//				systemObject.addClass(addedClassObject);
+//			}
+//			if(monitor != null)
+//				monitor.worked(1);
+//		}
+//		instance.clearAffectedCompilationUnits();
+//		if(monitor != null)
+//			monitor.done();
+//	}
 
 	private List<IMarker> buildProject(IJavaProject iJavaProject, IProgressMonitor pm) {
 		ArrayList<IMarker> result = new ArrayList<IMarker>();

@@ -204,21 +204,6 @@ public class SystemObject {
     	return classObjectSet;
     }
 
-    public Set<ClassObject> getClassObjects(IPackageFragmentRoot packageFragmentRoot) {
-    	Set<ClassObject> classObjectSet = new LinkedHashSet<ClassObject>();
-    	try {
-    		IJavaElement[] children = packageFragmentRoot.getChildren();
-    		for(IJavaElement child : children) {
-    			if(child.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-    				IPackageFragment packageFragment = (IPackageFragment)child;
-    				classObjectSet.addAll(getClassObjects(packageFragment));
-    			}
-    		}
-    	} catch(JavaModelException e) {
-			e.printStackTrace();
-		}
-    	return classObjectSet;
-    }
 
     public Set<ClassObject> getClassObjects(IPackageFragment packageFragment) {
     	Set<ClassObject> classObjectSet = new LinkedHashSet<ClassObject>();
@@ -263,76 +248,7 @@ public class SystemObject {
     	return classObjectSet;
     }
 
-    public AnonymousClassDeclarationObject getAnonymousClassDeclaration(IType declaringType) {
-    	try {
-			if(declaringType.isAnonymous()) {
-				int occurrenceCount = declaringType.getOccurrenceCount();
-				IJavaElement declaringTypeParent = declaringType.getParent();
-				IMethod methodContainingAnonymousClass = null;
-				if(declaringTypeParent instanceof IMethod) {
-					methodContainingAnonymousClass = (IMethod)declaringTypeParent;
-				}
-				if(methodContainingAnonymousClass != null) {
-					AbstractMethodDeclaration md = getMethodObject(methodContainingAnonymousClass);
-					List<AnonymousClassDeclarationObject> anonymousClassDeclarations = md.getAnonymousClassDeclarations();
-					if(occurrenceCount - 1 < anonymousClassDeclarations.size()) {
-						return anonymousClassDeclarations.get(occurrenceCount - 1);
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-    	return null;
-    }
 
-    public AbstractMethodDeclaration getMethodObject(IMethod method) {
-    	try {
-    		IType declaringType = method.getDeclaringType();
-    		String fullyQualifiedName = declaringType.getFullyQualifiedName('.');
-    		ClassObject classObject = getClassObject(fullyQualifiedName);
-    		if(classObject != null) {
-    			ListIterator<MethodObject> mi = classObject.getMethodIterator();
-    			while(mi.hasNext()) {
-    				MethodObject mo = mi.next();
-    				IMethod resolvedMethod = (IMethod)mo.getMethodDeclaration().resolveBinding().getJavaElement();
-    				if(method.isSimilar(resolvedMethod) && method.getSourceRange().equals(resolvedMethod.getSourceRange()))
-    					return mo;
-    			}
-    			ListIterator<ConstructorObject> ci = classObject.getConstructorIterator();
-    			while(ci.hasNext()) {
-    				ConstructorObject co = ci.next();
-    				IMethod resolvedMethod = (IMethod)co.getMethodDeclaration().resolveBinding().getJavaElement();
-    				if(method.isSimilar(resolvedMethod) && method.getSourceRange().equals(resolvedMethod.getSourceRange()))
-    					return co;
-    			}
-    		}
-    		//check if declaringType is an anonymous class declaration
-    		if(declaringType.isAnonymous()) {
-    			IJavaElement declaringTypeParent = declaringType.getParent();
-    			IMethod methodContainingAnonymousClass = null;
-    			if(declaringTypeParent instanceof IMethod) {
-    				methodContainingAnonymousClass = (IMethod)declaringTypeParent;
-    			}
-    			if(methodContainingAnonymousClass != null) {
-    				AbstractMethodDeclaration md = getMethodObject(methodContainingAnonymousClass);
-    				List<AnonymousClassDeclarationObject> anonymousClassDeclarations = md.getAnonymousClassDeclarations();
-    				for(AnonymousClassDeclarationObject anonymous : anonymousClassDeclarations) {
-    					ListIterator<MethodObject> mi2 = anonymous.getMethodIterator();
-    					while(mi2.hasNext()) {
-    						MethodObject mo2 = mi2.next();
-    						IMethod resolvedMethod = (IMethod)mo2.getMethodDeclaration().resolveBinding().getJavaElement();
-    						if(method.isSimilar(resolvedMethod) && method.getSourceRange().equals(resolvedMethod.getSourceRange()))
-    							return mo2;
-    					}
-    				}
-    			}
-    		}
-    	} catch (JavaModelException e) {
-    		e.printStackTrace();
-    	}
-    	return null;
-    }
 
     public List<String> getClassNames() {
         List<String> names = new ArrayList<String>();
@@ -342,39 +258,6 @@ public class SystemObject {
         return names;
     }
 
-
-	private boolean validTypeBinding(ITypeBinding typeBinding) {
-		return typeBinding.isPrimitive() || typeBinding.isEnum() || typeBinding.getQualifiedName().equals("java.lang.String");
-	}
-
-
-    private boolean nonEmptyIntersection(List<SimpleName> staticFieldUnion, List<SimpleName> staticFields) {
-    	for(SimpleName simpleName1 : staticFields) {
-    		for(SimpleName simpleName2 : staticFieldUnion) {
-    			if(simpleName1.resolveBinding().isEqualTo(simpleName2.resolveBinding()))
-    				return true;
-    		}
-    	}
-    	return false;
-    }
-
-    private List<SimpleName> constructUnion(List<SimpleName> staticFieldUnion, List<SimpleName> staticFields) {
-    	List<SimpleName> initialStaticFields = new ArrayList<SimpleName>(staticFieldUnion);
-    	List<SimpleName> staticFieldsToBeAdded = new ArrayList<SimpleName>();
-    	for(SimpleName simpleName1 : staticFields) {
-    		boolean isContained = false;
-    		for(SimpleName simpleName2 : staticFieldUnion) {
-    			if(simpleName1.resolveBinding().isEqualTo(simpleName2.resolveBinding())) {
-    				isContained = true;
-    				break;
-    			}
-    		}
-    		if(!isContained)
-    			staticFieldsToBeAdded.add(simpleName1);
-    	}
-    	initialStaticFields.addAll(staticFieldsToBeAdded);
-    	return initialStaticFields;
-    }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();

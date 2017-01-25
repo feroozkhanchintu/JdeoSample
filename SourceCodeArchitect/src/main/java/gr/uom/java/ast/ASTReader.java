@@ -1,5 +1,7 @@
 package gr.uom.java.ast;
 
+import gr.uom.java.ast.decomposition.cfg.CFG;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -8,13 +10,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaModelMarker;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.IPackageFragmentRoot;
-import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.*;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -50,10 +46,10 @@ import gr.uom.java.ast.decomposition.AbstractExpression;
 import gr.uom.java.ast.decomposition.MethodBodyObject;
 import gr.uom.java.ast.util.StatementExtractor;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
 
 public class ASTReader {
 
@@ -271,51 +267,9 @@ public class ASTReader {
         return classObjects;
 	}
 
-	private List<CommentObject> processComments(IFile iFile, IDocument iDocument,
-			AbstractTypeDeclaration typeDeclaration, List<Comment> comments) {
-		List<CommentObject> commentList = new ArrayList<CommentObject>();
-		int typeDeclarationStartPosition = typeDeclaration.getStartPosition();
-		int typeDeclarationEndPosition = typeDeclarationStartPosition + typeDeclaration.getLength();
-		for(Comment comment : comments) {
-			int commentStartPosition = comment.getStartPosition();
-			int commentEndPosition = commentStartPosition + comment.getLength();
-			int commentStartLine = 0;
-			int commentEndLine = 0;
-			String text = null;
-			try {
-				commentStartLine = iDocument.getLineOfOffset(commentStartPosition);
-				commentEndLine = iDocument.getLineOfOffset(commentEndPosition);
-				text = iDocument.get(commentStartPosition, comment.getLength());
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
-			CommentType type = null;
-			if(comment.isLineComment()) {
-				type = CommentType.LINE;
-			}
-			else if(comment.isBlockComment()) {
-				type = CommentType.BLOCK;
-			}
-			else if(comment.isDocComment()) {
-				type = CommentType.JAVADOC;
-			}
-			CommentObject commentObject = new CommentObject(text, type, commentStartLine, commentEndLine);
-			commentObject.setComment(comment);
-			String fileExtension = iFile.getFileExtension() != null ? "." + iFile.getFileExtension() : "";
-			if(typeDeclarationStartPosition <= commentStartPosition && typeDeclarationEndPosition >= commentEndPosition) {
-				commentList.add(commentObject);
-			}
-			else if(iFile.getName().equals(typeDeclaration.getName().getIdentifier() + fileExtension)) {
-				commentList.add(commentObject);
-			}
-		}
-		return commentList;
-	}
-
 	private ClassObject processTypeDeclaration(IFile iFile, IDocument document, TypeDeclaration typeDeclaration, List<Comment> comments) {
 		final ClassObject classObject = new ClassObject();
 		classObject.setIFile(iFile);
-		classObject.addComments(processComments(iFile, document, typeDeclaration, comments));
 		ITypeBinding typeDeclarationBinding = typeDeclaration.resolveBinding();
 		if(typeDeclarationBinding.isLocal()) {
 			ITypeBinding declaringClass = typeDeclarationBinding.getDeclaringClass();
@@ -379,7 +333,6 @@ public class ASTReader {
 		final ClassObject classObject = new ClassObject();
 		classObject.setEnum(true);
 		classObject.setIFile(iFile);
-		classObject.addComments(processComments(iFile, document, enumDeclaration, comments));
 		classObject.setName(enumDeclaration.resolveBinding().getQualifiedName());
 		classObject.setAbstractTypeDeclaration(enumDeclaration);
 		
@@ -612,5 +565,54 @@ public class ASTReader {
 			return systemObject.getClassObject(0).getAbstractTypeDeclaration().getAST();
 		}
 		return null;
+	}
+
+    public static String getFileContents(String filePath) throws IOException {
+        File file = new File(filePath);
+        if(file.exists() && file.isFile()) {
+            return FileUtils.readFileToString(file, Charset.defaultCharset());
+        }
+        return null;
+    }
+
+    public static CompilationUnit createCompilationUnit(String filePath, String[] sources, String[] classpathEntries) throws IOException {
+		String fileContents = getFileContents(filePath);
+
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setSource(fileContents.toCharArray());
+		parser.setResolveBindings(true);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setBindingsRecovery(true);
+
+		Map options = JavaCore.getOptions();
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_8, options);
+		parser.setCompilerOptions(options);
+		parser.setUnitName("CompilationUnit");
+		parser.setEnvironment(classpathEntries, sources, new String[]{"UTF-8"}, true);
+
+		CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+		return unit;
+	}
+
+	public static void main(String[] args) throws IOException {
+		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
+		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+
+//		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
+//        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
+
+		//		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+
+
+		CompilationUnit compilationUnit = createCompilationUnit(file, new String[]{srcPath}, null);
+
+		ASTReader astReader= new ASTReader();
+		List<ClassObject> classObjects = astReader.parseAST(compilationUnit, null);
+		System.out.println(classObjects.get(0));
+		System.out.println("\n\n");
+
+		CFG cfg = new CFG(classObjects.get(0).getMethodList().get(0));
+
+		System.out.println(cfg.getEdges());
 	}
 }

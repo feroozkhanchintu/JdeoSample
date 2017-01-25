@@ -1,6 +1,7 @@
 package gr.uom.java.ast;
 
 import gr.uom.java.ast.decomposition.cfg.CFG;
+import gr.uom.java.ast.decomposition.cfg.PDG;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -214,17 +215,17 @@ public class ASTReader {
 		return innerTypeDeclarations;
 	}
 
-	private List<ClassObject> parseAST(ICompilationUnit iCompilationUnit) {
-		ASTInformationGenerator.setCurrentITypeRoot(iCompilationUnit);
-		IFile iFile = (IFile)iCompilationUnit.getResource();
-        ASTParser parser = ASTParser.newParser(JLS);
-        parser.setKind(ASTParser.K_COMPILATION_UNIT);
-        parser.setSource(iCompilationUnit);
-        parser.setResolveBindings(true); // we need bindings later on
-        CompilationUnit compilationUnit = (CompilationUnit)parser.createAST(null);
-        
-        return parseAST(compilationUnit, iFile);
-	}
+//	private List<ClassObject> parseAST(ICompilationUnit iCompilationUnit) {
+//		ASTInformationGenerator.setCurrentCompilationUnit(iCompilationUnit);
+//		IFile iFile = (IFile)iCompilationUnit.getResource();
+//        ASTParser parser = ASTParser.newParser(JLS);
+//        parser.setKind(ASTParser.K_COMPILATION_UNIT);
+//        parser.setSource(iCompilationUnit);
+//        parser.setResolveBindings(true); // we need bindings later on
+//        CompilationUnit compilationUnit = (CompilationUnit)parser.createAST(null);
+//
+//        return parseAST(compilationUnit, iFile);
+//	}
 
 	private List<ClassObject> parseAST(CompilationUnit compilationUnit, IFile iFile) {
 //		ITextFileBufferManager bufferManager = FileBuffers.getTextFileBufferManager();
@@ -388,16 +389,9 @@ public class ASTReader {
 	private void processFieldDeclaration(final ClassObject classObject, FieldDeclaration fieldDeclaration) {
 		Type fieldType = fieldDeclaration.getType();
 		ITypeBinding binding = fieldType.resolveBinding();
-		List<CommentObject> fieldDeclarationComments = new ArrayList<CommentObject>();
 		int fieldDeclarationStartPosition = fieldDeclaration.getStartPosition();
 		int fieldDeclarationEndPosition = fieldDeclarationStartPosition + fieldDeclaration.getLength();
-		for(CommentObject comment : classObject.commentList) {
-			int commentStartPosition = comment.getStartPosition();
-			int commentEndPosition = commentStartPosition + comment.getLength();
-			if(fieldDeclarationStartPosition <= commentStartPosition && fieldDeclarationEndPosition >= commentEndPosition) {
-				fieldDeclarationComments.add(comment);
-			}
-		}
+
 		List<VariableDeclarationFragment> fragments = fieldDeclaration.fragments();
 		for(VariableDeclarationFragment fragment : fragments) {
 			String qualifiedName = binding.getQualifiedName();
@@ -406,8 +400,7 @@ public class ASTReader {
 			FieldObject fieldObject = new FieldObject(typeObject, fragment.getName().getIdentifier());
 			fieldObject.setClassName(classObject.getName());
 			fieldObject.setVariableDeclarationFragment(fragment);
-			fieldObject.addComments(fieldDeclarationComments);
-			
+
 			int fieldModifiers = fieldDeclaration.getModifiers();
 			if((fieldModifiers & Modifier.PUBLIC) != 0)
 				fieldObject.setAccess(Access.PUBLIC);
@@ -433,13 +426,6 @@ public class ASTReader {
 		constructorObject.setClassName(classObject.getName());
 		int methodDeclarationStartPosition = methodDeclaration.getStartPosition();
 		int methodDeclarationEndPosition = methodDeclarationStartPosition + methodDeclaration.getLength();
-		for(CommentObject comment : classObject.commentList) {
-			int commentStartPosition = comment.getStartPosition();
-			int commentEndPosition = commentStartPosition + comment.getLength();
-			if(methodDeclarationStartPosition <= commentStartPosition && methodDeclarationEndPosition >= commentEndPosition) {
-				constructorObject.addComment(comment);
-			}
-		}
 		
 		if(methodDeclaration.getJavadoc() != null) {
 			Javadoc javaDoc = methodDeclaration.getJavadoc();
@@ -497,13 +483,6 @@ public class ASTReader {
 			AnonymousClassDeclaration anonymousClassDeclaration = anonymous.getAnonymousClassDeclaration();
 			int anonymousClassDeclarationStartPosition = anonymousClassDeclaration.getStartPosition();
 			int anonymousClassDeclarationEndPosition = anonymousClassDeclarationStartPosition + anonymousClassDeclaration.getLength();
-			for(CommentObject comment : constructorObject.commentList) {
-				int commentStartPosition = comment.getStartPosition();
-				int commentEndPosition = commentStartPosition + comment.getLength();
-				if(anonymousClassDeclarationStartPosition <= commentStartPosition && anonymousClassDeclarationEndPosition >= commentEndPosition) {
-					anonymous.addComment(comment);
-				}
-			}
 		}
 		
 		if(methodDeclaration.isConstructor()) {
@@ -595,23 +574,29 @@ public class ASTReader {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
-		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+//		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
+//		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
 
-//		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
-//        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
+		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
+        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
 
-		//		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
 
 
 		CompilationUnit compilationUnit = createCompilationUnit(file, new String[]{srcPath}, null);
 
-		ASTReader astReader= new ASTReader();
-		List<ClassObject> classObjects = astReader.parseAST(compilationUnit, null);
+		CompilationUnitCache.compilationUnitList.add(compilationUnit);
+        ASTInformationGenerator.setCurrentCompilationUnit(compilationUnit);
+        ASTReader astReader= new ASTReader();
+        systemObject = new SystemObject();
+
+        List<ClassObject> classObjects = astReader.parseAST(compilationUnit, null);
+		systemObject.addClasses(classObjects);
 		System.out.println(classObjects.get(0));
 		System.out.println("\n\n");
 
 		CFG cfg = new CFG(classObjects.get(0).getMethodList().get(0));
+
+        PDG pdg = new PDG(cfg, null, classObjects.get(0).getFieldsAccessedInsideMethod(classObjects.get(0).getMethodList().get(0)), null);
 
 		System.out.println(cfg.getEdges());
 	}

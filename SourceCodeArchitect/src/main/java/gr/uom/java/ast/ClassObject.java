@@ -1,7 +1,5 @@
 package gr.uom.java.ast;
 
-import gr.uom.java.ast.decomposition.MethodBodyObject;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -9,6 +7,7 @@ import java.util.ListIterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -71,8 +70,8 @@ public class ClassObject extends ClassDeclarationObject {
     	return this;
     }
 
-    public ITypeRoot getITypeRoot() {
-    	return typeDeclaration.getITypeRoot();
+    public CompilationUnit getCompilationUnit() {
+    	return typeDeclaration.getCompilationUnit();
     }
 
     public IFile getIFile() {

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class AnonymousClassDeclarationObject extends ClassDeclarationObject {
 	private ASTInformation anonymousClassDeclaration;
@@ -28,8 +29,8 @@ public class AnonymousClassDeclarationObject extends ClassDeclarationObject {
 		this.classObject = classObject;
 	}
 
-	public ITypeRoot getITypeRoot() {
-		return anonymousClassDeclaration.getITypeRoot();
+	public CompilationUnit getCompilationUnit() {
+		return anonymousClassDeclaration.getCompilationUnit();
 	}
 
 	public IFile getIFile() {

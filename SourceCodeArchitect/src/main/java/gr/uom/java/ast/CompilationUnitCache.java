@@ -23,7 +23,7 @@ public class CompilationUnitCache extends Indexer {
 
 	private static CompilationUnitCache instance;
 	private LinkedList<ITypeRoot> iTypeRootList;
-	private LinkedList<CompilationUnit> compilationUnitList;
+	public static List<CompilationUnit> compilationUnitList = new ArrayList<>();
 	private List<ITypeRoot> lockedTypeRoots;
 
 	//String key corresponds to MethodDeclaration.resolveBinding.getKey()
@@ -104,7 +104,6 @@ public class CompilationUnitCache extends Indexer {
 		super();
 		this.iTypeRootList = new LinkedList<ITypeRoot>();
 		this.lockedTypeRoots = new ArrayList<ITypeRoot>();
-		this.compilationUnitList = new LinkedList<CompilationUnit>();
 		this.usedFieldsForMethodExpressionMap = new HashMap<String, LinkedHashSet<AbstractVariable>>();
 		this.definedFieldsForMethodExpressionMap = new HashMap<String, LinkedHashSet<AbstractVariable>>();
 		this.thrownExceptionTypesForMethodExpressionMap = new HashMap<String, LinkedHashSet<String>>();
@@ -117,51 +116,8 @@ public class CompilationUnitCache extends Indexer {
 		return instance;
 	}
 
-	public CompilationUnit getCompilationUnit(ITypeRoot iTypeRoot) {
-		if(iTypeRoot instanceof IClassFile) {
-			IClassFile classFile = (IClassFile)iTypeRoot;
-			return LibraryClassStorage.getInstance().getCompilationUnit(classFile);
-		}
-		else {
-			if(iTypeRootList.contains(iTypeRoot)) {
-				int position = iTypeRootList.indexOf(iTypeRoot);
-				return compilationUnitList.get(position);
-			}
-			else {
-				ASTParser parser = ASTParser.newParser(ASTReader.JLS);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-				parser.setSource(iTypeRoot);
-				parser.setResolveBindings(true);
-				CompilationUnit compilationUnit = (CompilationUnit)parser.createAST(null);
-				
-				int maximumCacheSize = 10000000;
-				if(iTypeRootList.size() < maximumCacheSize) {
-					iTypeRootList.add(iTypeRoot);
-					compilationUnitList.add(compilationUnit);
-				}
-				else {
-					if(!lockedTypeRoots.isEmpty()) {
-						int indexToBeRemoved = 0;
-						int counter = 0;
-						for(ITypeRoot lockedTypeRoot : lockedTypeRoots) {
-							if(iTypeRootList.get(counter).equals(lockedTypeRoot)) {
-								indexToBeRemoved++;
-							}
-							counter++;
-						}
-						iTypeRootList.remove(indexToBeRemoved);
-						compilationUnitList.remove(indexToBeRemoved);
-					}
-					else {
-						iTypeRootList.removeFirst();
-						compilationUnitList.removeFirst();
-					}
-					iTypeRootList.add(iTypeRoot);
-					compilationUnitList.add(compilationUnit);
-				}
-				return compilationUnit;
-			}
-		}
+	public CompilationUnit getCompilationUnit(CompilationUnit compilationUnit1) {
+		return compilationUnitList.get(compilationUnitList.indexOf(compilationUnit1));
 	}
 
 	public void lock(ITypeRoot iTypeRoot) {

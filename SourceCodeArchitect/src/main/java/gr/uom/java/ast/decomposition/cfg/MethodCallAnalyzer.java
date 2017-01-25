@@ -437,7 +437,7 @@ public class MethodCallAnalyzer {
 		if(methodBody != null) {
 			IMethod iMethod = (IMethod)methodBinding.getJavaElement();
 			IClassFile iClassFile = iMethod.getClassFile();
-			ASTInformationGenerator.setCurrentITypeRoot(iClassFile);
+//			ASTInformationGenerator.setCurrentCompilationUnit(iClassFile);
 			MethodBodyObject methodBodyObject = new MethodBodyObject(methodBody);
 
 			for(AbstractVariable originalField : methodBodyObject.getDefinedFieldsThroughParameters()) {
@@ -690,7 +690,7 @@ public class MethodCallAnalyzer {
 			if(methodBody != null) {
 				IMethod iMethod = (IMethod)methodBinding.getJavaElement();
 				IClassFile iClassFile = iMethod.getClassFile();
-				ASTInformationGenerator.setCurrentITypeRoot(iClassFile);
+//				ASTInformationGenerator.setCurrentCompilationUnit(iClassFile);
 				MethodBodyObject methodBodyObject = new MethodBodyObject(methodBody);
 				LinkedHashSet<PlainVariable> definedFields = new LinkedHashSet<PlainVariable>();
 				LinkedHashSet<PlainVariable> usedFields = new LinkedHashSet<PlainVariable>();

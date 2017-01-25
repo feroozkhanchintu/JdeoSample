@@ -13,7 +13,6 @@ public class FieldObject extends VariableDeclarationObject {
 
     private String name;
     private TypeObject type;
-    private List<CommentObject> commentList;
     private boolean _static;
     private Access access;
     private String className;
@@ -26,7 +25,6 @@ public class FieldObject extends VariableDeclarationObject {
         this.name = name;
         this._static = false;
         this.access = Access.NONE;
-        this.commentList = new ArrayList<CommentObject>();
     }
 
     public void setVariableDeclarationFragment(VariableDeclarationFragment fragment) {
@@ -61,18 +59,6 @@ public class FieldObject extends VariableDeclarationObject {
     public TypeObject getType() {
         return type;
     }
-
-	public boolean addComment(CommentObject comment) {
-		return commentList.add(comment);
-	}
-
-	public boolean addComments(List<CommentObject> comments) {
-		return commentList.addAll(comments);
-	}
-
-	public ListIterator<CommentObject> getCommentListIterator() {
-		return commentList.listIterator();
-	}
 
     public boolean isStatic() {
         return _static;

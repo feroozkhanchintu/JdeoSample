@@ -574,11 +574,11 @@ public class ASTReader {
 	}
 
 	public static void main(String[] args) throws IOException {
-//		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
-//		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
+		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
 
-		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
-        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
+//		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
+//        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
 
 
 
@@ -595,6 +595,7 @@ public class ASTReader {
 		System.out.println("\n\n");
 
 		CFG cfg = new CFG(classObjects.get(0).getMethodList().get(0));
+        System.out.println(cfg);
 
         PDG pdg = new PDG(cfg, null, classObjects.get(0).getFieldsAccessedInsideMethod(classObjects.get(0).getMethodList().get(0)), null);
 

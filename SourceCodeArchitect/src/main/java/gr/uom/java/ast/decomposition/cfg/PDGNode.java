@@ -45,8 +45,7 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	protected Set<FieldObject> fieldsAccessedInMethod;
 	private Set<AbstractVariable> originalDefinedVariables;
 	private Set<AbstractVariable> originalUsedVariables;
-	private MethodCallAnalyzer methodCallAnalyzer;
-	
+
 	public PDGNode() {
 		super();
 		this.declaredVariables = new LinkedHashSet<AbstractVariable>();
@@ -69,7 +68,6 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 		this.usedVariables = new LinkedHashSet<AbstractVariable>();
 		this.createdTypes = new LinkedHashSet<CreationObject>();
 		this.thrownExceptionTypes = new LinkedHashSet<String>();
-		this.methodCallAnalyzer = new MethodCallAnalyzer(definedVariables, usedVariables, thrownExceptionTypes, this.variableDeclarationsInMethod);
 	}
 
 	public Iterator<AbstractVariable> getDeclaredVariableIterator() {
@@ -296,38 +294,6 @@ public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 
 	public String getAnnotation() {
 		return "Def = " + definedVariables + " , Use = " + usedVariables;
-	}
-
-	protected void processArgumentsOfInternalMethodInvocation(MethodInvocationObject methodInvocationObject, AbstractVariable variable) {
-		SystemObject systemObject = ASTReader.getSystemObject();
-		MethodInvocation methodInvocation = methodInvocationObject.getMethodInvocation();
-		IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
-		ClassObject classObject = systemObject.getClassObject(methodInvocationObject.getOriginClassName());
-		MethodObject methodObject = null;
-		if(classObject != null) {
-			methodObject = classObject.getMethod(methodInvocationObject);
-		}
-		if(classObject == null || methodObject != null) {
-			//classObject == null => external method call
-			//methodObject != null => the internal method might not exist, in the case of built-in enumeration methods, such as values() and valueOf()
-			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, methodObject, methodInvocation.arguments(), methodBinding, variable);
-		}
-	}
-
-	protected void processArgumentsOfInternalClassInstanceCreation(ClassInstanceCreationObject classInstanceCreationObject, AbstractVariable variable) {
-		SystemObject systemObject = ASTReader.getSystemObject();
-		ClassInstanceCreation classInstanceCreation = classInstanceCreationObject.getClassInstanceCreation();
-		IMethodBinding methodBinding = classInstanceCreation.resolveConstructorBinding();
-		ClassObject classObject = systemObject.getClassObject(classInstanceCreationObject.getType().getClassType());
-		ConstructorObject constructorObject = null;
-		if(classObject != null) {
-			constructorObject = classObject.getConstructor(classInstanceCreationObject);
-		}
-		if((classObject == null && !methodBinding.getDeclaringClass().isAnonymous() && !methodBinding.getDeclaringClass().isLocal()) || constructorObject != null) {
-			//classObject == null && !methodBinding.getDeclaringClass().isAnonymous() => external constructor call that is not an anonymous class declaration
-			//constructorObject != null => the internal constructor might not exist, in the case the default constructor is called
-			methodCallAnalyzer.processArgumentsOfInternalMethodInvocation(classObject, constructorObject, classInstanceCreation.arguments(), methodBinding, variable);
-		}
 	}
 
 	public void updateReachingAliasSet(ReachingAliasSet reachingAliasSet) {

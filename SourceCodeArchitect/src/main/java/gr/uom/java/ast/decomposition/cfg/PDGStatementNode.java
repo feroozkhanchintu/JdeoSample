@@ -40,9 +40,6 @@ public class PDGStatementNode extends PDGNode {
 							break;
 						}
 					}
-					if(variable != null) {
-						processArgumentsOfInternalClassInstanceCreation(classInstanceCreation, variable);
-					}
 					thrownExceptionTypes.addAll(classInstanceCreation.getThrownExceptions());
 				}
 			}
@@ -61,7 +58,6 @@ public class PDGStatementNode extends PDGNode {
 				LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughLocalVariables.get(variable);
 				for(MethodInvocationObject methodInvocationObject : methodInvocations) {
 					thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-					processArgumentsOfInternalMethodInvocation(methodInvocationObject, variable);
 				}
 			}
 			Map<AbstractVariable, LinkedHashSet<MethodInvocationObject>> invokedMethodsThroughParameters = statement.getInvokedMethodsThroughParameters();
@@ -69,7 +65,6 @@ public class PDGStatementNode extends PDGNode {
 				LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughParameters.get(variable);
 				for(MethodInvocationObject methodInvocationObject : methodInvocations) {
 					thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-					processArgumentsOfInternalMethodInvocation(methodInvocationObject, variable);
 				}
 			}
 			
@@ -102,16 +97,13 @@ public class PDGStatementNode extends PDGNode {
 				LinkedHashSet<MethodInvocationObject> methodInvocations = invokedMethodsThroughFields.get(variable);
 				for(MethodInvocationObject methodInvocationObject : methodInvocations) {
 					thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-					processArgumentsOfInternalMethodInvocation(methodInvocationObject, variable);
 				}
 			}
 			for(MethodInvocationObject methodInvocationObject : statement.getInvokedMethodsThroughThisReference()) {
 				thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-				processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
 			}
 			for(MethodInvocationObject methodInvocationObject : statement.getInvokedStaticMethods()) {
 				thrownExceptionTypes.addAll(methodInvocationObject.getThrownExceptions());
-				processArgumentsOfInternalMethodInvocation(methodInvocationObject, null);
 			}
 			List<SuperMethodInvocationObject> superMethodInvocations = statement.getSuperMethodInvocations();
 			for(SuperMethodInvocationObject superMethodInvocationObject : superMethodInvocations) {

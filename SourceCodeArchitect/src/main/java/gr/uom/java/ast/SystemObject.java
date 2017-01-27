@@ -46,7 +46,6 @@ public class SystemObject {
     private Map<MethodInvocationObject, FieldInstructionObject> getterMap;
     private Map<MethodInvocationObject, FieldInstructionObject> setterMap;
     private Map<MethodInvocationObject, FieldInstructionObject> collectionAdderMap;
-    private Map<MethodInvocationObject, MethodInvocationObject> delegateMap;
 
     public SystemObject() {
         this.classList = new ArrayList<ClassObject>();
@@ -54,7 +53,6 @@ public class SystemObject {
         this.getterMap = new LinkedHashMap<MethodInvocationObject, FieldInstructionObject>();
         this.setterMap = new LinkedHashMap<MethodInvocationObject, FieldInstructionObject>();
         this.collectionAdderMap = new LinkedHashMap<MethodInvocationObject, FieldInstructionObject>();
-        this.delegateMap = new LinkedHashMap<MethodInvocationObject, MethodInvocationObject>();
     }
 
     public void addClass(ClassObject c) {
@@ -112,10 +110,6 @@ public class SystemObject {
     	collectionAdderMap.put(methodInvocation, fieldInstruction);
     }
     
-    public void addDelegate(MethodInvocationObject methodInvocation, MethodInvocationObject delegation) {
-    	delegateMap.put(methodInvocation, delegation);
-    }
-    
     public FieldInstructionObject containsGetter(MethodInvocationObject methodInvocation) {
     	return getterMap.get(methodInvocation);
     }
@@ -126,10 +120,6 @@ public class SystemObject {
     
     public FieldInstructionObject containsCollectionAdder(MethodInvocationObject methodInvocation) {
     	return collectionAdderMap.get(methodInvocation);
-    }
-    
-    public MethodInvocationObject containsDelegate(MethodInvocationObject methodInvocation) {
-    	return delegateMap.get(methodInvocation);
     }
     
     public MethodObject getMethod(MethodInvocationObject mio) {

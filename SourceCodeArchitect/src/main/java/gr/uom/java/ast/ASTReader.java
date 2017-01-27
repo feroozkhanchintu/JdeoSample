@@ -29,18 +29,15 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import gr.uom.java.ast.decomposition.AbstractExpression;
@@ -426,27 +423,7 @@ public class ASTReader {
 		constructorObject.setClassName(classObject.getName());
 		int methodDeclarationStartPosition = methodDeclaration.getStartPosition();
 		int methodDeclarationEndPosition = methodDeclarationStartPosition + methodDeclaration.getLength();
-		
-		if(methodDeclaration.getJavadoc() != null) {
-			Javadoc javaDoc = methodDeclaration.getJavadoc();
-			List<TagElement> tags = javaDoc.tags();
-			for(TagElement tagElement : tags) {
-				String tagName = tagElement.getTagName();
-				if(tagName != null && tagName.equals(TagElement.TAG_THROWS)) {
-					List<ASTNode> fragments = tagElement.fragments();
-					for(ASTNode docElement : fragments) {
-						if(docElement instanceof Name) {
-							Name name = (Name)docElement;
-							IBinding binding = name.resolveBinding();
-							if(binding instanceof ITypeBinding) {
-								ITypeBinding typeBinding = (ITypeBinding)binding;
-								constructorObject.addExceptionInJavaDocThrows(typeBinding.getQualifiedName());
-							}
-						}
-					}
-				}
-			}
-		}
+
 		int methodModifiers = methodDeclaration.getModifiers();
 		if((methodModifiers & Modifier.PUBLIC) != 0)
 			constructorObject.setAccess(Access.PUBLIC);
@@ -525,9 +502,6 @@ public class ASTReader {
 			fieldInstruction = methodObject.isCollectionAdder();
 			if(fieldInstruction != null)
 				systemObject.addCollectionAdder(methodObject.generateMethodInvocation(), fieldInstruction);
-			MethodInvocationObject methodInvocation = methodObject.isDelegate();
-			if(methodInvocation != null)
-				systemObject.addDelegate(methodObject.generateMethodInvocation(), methodInvocation);
 		}
 	}
 

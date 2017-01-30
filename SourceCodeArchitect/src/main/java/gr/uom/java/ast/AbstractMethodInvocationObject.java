@@ -1,10 +1,6 @@
 package gr.uom.java.ast;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractMethodInvocationObject {
 	private TypeObject originClassType;

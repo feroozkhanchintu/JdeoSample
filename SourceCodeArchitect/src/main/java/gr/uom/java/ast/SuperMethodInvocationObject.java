@@ -1,8 +1,8 @@
 package gr.uom.java.ast;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+
+import java.util.List;
 
 public class SuperMethodInvocationObject extends AbstractMethodInvocationObject {
 

@@ -1,12 +1,6 @@
 package gr.uom.java.ast.util;
 
-import org.eclipse.jdt.core.dom.BooleanLiteral;
-import org.eclipse.jdt.core.dom.CharacterLiteral;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.NullLiteral;
-import org.eclipse.jdt.core.dom.NumberLiteral;
-import org.eclipse.jdt.core.dom.StringLiteral;
-import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.core.dom.*;
 
 public class InstanceOfLiteral implements ExpressionInstanceChecker {
 

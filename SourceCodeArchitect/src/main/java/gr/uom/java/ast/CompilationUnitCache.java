@@ -1,10 +1,10 @@
 package gr.uom.java.ast;
 
 
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class CompilationUnitCache {
 

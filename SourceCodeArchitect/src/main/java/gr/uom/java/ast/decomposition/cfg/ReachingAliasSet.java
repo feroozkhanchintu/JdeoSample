@@ -1,11 +1,11 @@
 package gr.uom.java.ast.decomposition.cfg;
 
+import org.eclipse.jdt.core.dom.VariableDeclaration;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class ReachingAliasSet {
 

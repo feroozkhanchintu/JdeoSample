@@ -1,12 +1,6 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class BasicBlockCFG {
 	private List<BasicBlock> basicBlocks;

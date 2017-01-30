@@ -1,17 +1,12 @@
 package gr.uom.java.ast.decomposition.cfg;
 
+import gr.uom.java.ast.*;
+import gr.uom.java.ast.decomposition.StatementObject;
+
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import gr.uom.java.ast.ClassInstanceCreationObject;
-import gr.uom.java.ast.CreationObject;
-import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.MethodInvocationObject;
-import gr.uom.java.ast.SuperMethodInvocationObject;
-import gr.uom.java.ast.VariableDeclarationObject;
-import gr.uom.java.ast.decomposition.StatementObject;
 
 public class PDGStatementNode extends PDGNode {
 	

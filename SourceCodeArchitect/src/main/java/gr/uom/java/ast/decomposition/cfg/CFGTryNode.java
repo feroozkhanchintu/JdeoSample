@@ -1,11 +1,11 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import gr.uom.java.ast.decomposition.AbstractStatement;
 import gr.uom.java.ast.decomposition.CatchClauseObject;
 import gr.uom.java.ast.decomposition.TryStatementObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CFGTryNode extends CFGBlockNode {
 	private List<String> handledExceptions;

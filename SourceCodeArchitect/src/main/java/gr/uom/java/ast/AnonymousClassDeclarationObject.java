@@ -1,13 +1,12 @@
 package gr.uom.java.ast;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ITypeRoot;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class AnonymousClassDeclarationObject extends ClassDeclarationObject {
 	private ASTInformation anonymousClassDeclaration;

@@ -1,16 +1,15 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import gr.uom.java.ast.decomposition.AbstractStatement;
+import gr.uom.java.ast.decomposition.CompositeStatementObject;
+import gr.uom.java.ast.decomposition.TryStatementObject;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 
-import gr.uom.java.ast.decomposition.AbstractStatement;
-import gr.uom.java.ast.decomposition.CompositeStatementObject;
-import gr.uom.java.ast.decomposition.TryStatementObject;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CFGBranchIfNode extends CFGBranchConditionalNode {
 

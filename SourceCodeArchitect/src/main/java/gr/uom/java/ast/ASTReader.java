@@ -1,53 +1,23 @@
 package gr.uom.java.ast;
 
-import gr.uom.java.ast.decomposition.cfg.CFG;
-import gr.uom.java.ast.decomposition.cfg.PDG;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.core.*;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
-import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.Comment;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jface.text.IDocument;
-
 import gr.uom.java.ast.decomposition.AbstractExpression;
 import gr.uom.java.ast.decomposition.MethodBodyObject;
+import gr.uom.java.ast.decomposition.cfg.CFG;
+import gr.uom.java.ast.decomposition.cfg.PDG;
 import gr.uom.java.ast.util.StatementExtractor;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jface.text.IDocument;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ASTReader {
 
@@ -55,130 +25,6 @@ public class ASTReader {
 	private static IJavaProject examinedProject;
 	public static final int JLS = AST.JLS8;
 
-//	public ASTReader(IJavaProject iJavaProject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
-//		List<IMarker> markers = buildProject(iJavaProject, monitor);
-//		if(!markers.isEmpty()) {
-//			throw new CompilationErrorDetectedException(markers);
-//		}
-//		if(monitor != null)
-//			monitor.beginTask("Parsing selected Java Project", getNumberOfCompilationUnits(iJavaProject));
-//		systemObject = new SystemObject();
-//		examinedProject = iJavaProject;
-//		try {
-//			IPackageFragmentRoot[] iPackageFragmentRoots = iJavaProject.getPackageFragmentRoots();
-//			for(IPackageFragmentRoot iPackageFragmentRoot : iPackageFragmentRoots) {
-//				IJavaElement[] children = iPackageFragmentRoot.getChildren();
-//				for(IJavaElement child : children) {
-//					if(child.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-//						IPackageFragment iPackageFragment = (IPackageFragment)child;
-//						ICompilationUnit[] iCompilationUnits = iPackageFragment.getCompilationUnits();
-//						for(ICompilationUnit iCompilationUnit : iCompilationUnits) {
-//							if(monitor != null && monitor.isCanceled())
-//				    			throw new OperationCanceledException();
-//							systemObject.addClasses(parseAST(iCompilationUnit));
-//							if(monitor != null)
-//								monitor.worked(1);
-//						}
-//					}
-//				}
-//			}
-//		} catch (JavaModelException e) {
-//			e.printStackTrace();
-//		}
-//		if(monitor != null)
-//			monitor.done();
-//	}
-//
-//	public ASTReader(IJavaProject iJavaProject, SystemObject existingSystemObject, IProgressMonitor monitor) throws CompilationErrorDetectedException {
-//		List<IMarker> markers = buildProject(iJavaProject, monitor);
-//		if(!markers.isEmpty()) {
-//			throw new CompilationErrorDetectedException(markers);
-//		}
-//		Set<ICompilationUnit> changedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-//		Set<ICompilationUnit> addedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-//		Set<ICompilationUnit> removedCompilationUnits = new LinkedHashSet<ICompilationUnit>();
-//		CompilationUnitCache instance = CompilationUnitCache.getInstance();
-//		for(ICompilationUnit changedCompilationUnit : instance.getChangedCompilationUnits()) {
-//			if(changedCompilationUnit.getJavaProject().equals(iJavaProject))
-//				changedCompilationUnits.add(changedCompilationUnit);
-//		}
-//		for(ICompilationUnit addedCompilationUnit : instance.getAddedCompilationUnits()) {
-//			if(addedCompilationUnit.getJavaProject().equals(iJavaProject))
-//				addedCompilationUnits.add(addedCompilationUnit);
-//		}
-//		for(ICompilationUnit removedCompilationUnit : instance.getRemovedCompilationUnits()) {
-//			if(removedCompilationUnit.getJavaProject().equals(iJavaProject))
-//				removedCompilationUnits.add(removedCompilationUnit);
-//		}
-//		if(monitor != null)
-//			monitor.beginTask("Parsing changed/added Compilation Units",
-//					changedCompilationUnits.size() + addedCompilationUnits.size());
-//		systemObject = existingSystemObject;
-//		examinedProject = iJavaProject;
-//		for(ICompilationUnit removedCompilationUnit : removedCompilationUnits) {
-//			IFile removedCompilationUnitFile = (IFile)removedCompilationUnit.getResource();
-//			systemObject.removeClasses(removedCompilationUnitFile);
-//		}
-//		for(ICompilationUnit changedCompilationUnit : changedCompilationUnits) {
-//			List<ClassObject> changedClassObjects = parseAST(changedCompilationUnit);
-//			for(ClassObject changedClassObject : changedClassObjects) {
-//				systemObject.replaceClass(changedClassObject);
-//			}
-//			if(monitor != null)
-//				monitor.worked(1);
-//		}
-//		for(ICompilationUnit addedCompilationUnit : addedCompilationUnits) {
-//			List<ClassObject> addedClassObjects = parseAST(addedCompilationUnit);
-//			for(ClassObject addedClassObject : addedClassObjects) {
-//				systemObject.addClass(addedClassObject);
-//			}
-//			if(monitor != null)
-//				monitor.worked(1);
-//		}
-//		instance.clearAffectedCompilationUnits();
-//		if(monitor != null)
-//			monitor.done();
-//	}
-
-	private List<IMarker> buildProject(IJavaProject iJavaProject, IProgressMonitor pm) {
-		ArrayList<IMarker> result = new ArrayList<IMarker>();
-		try {
-			IProject project = iJavaProject.getProject();
-			project.refreshLocal(IResource.DEPTH_INFINITE, pm);	
-			project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, pm);
-			IMarker[] markers = null;
-			markers = project.findMarkers(IJavaModelMarker.JAVA_MODEL_PROBLEM_MARKER, true, IResource.DEPTH_INFINITE);
-			for (IMarker marker: markers) {
-				Integer severityType = (Integer) marker.getAttribute(IMarker.SEVERITY);
-				if (severityType.intValue() == IMarker.SEVERITY_ERROR) {
-					result.add(marker);
-				}
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	public static int getNumberOfCompilationUnits(IJavaProject iJavaProject) {
-		int numberOfCompilationUnits = 0;
-		try {
-			IPackageFragmentRoot[] iPackageFragmentRoots = iJavaProject.getPackageFragmentRoots();
-			for(IPackageFragmentRoot iPackageFragmentRoot : iPackageFragmentRoots) {
-				IJavaElement[] children = iPackageFragmentRoot.getChildren();
-				for(IJavaElement child : children) {
-					if(child.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
-						IPackageFragment iPackageFragment = (IPackageFragment)child;
-						ICompilationUnit[] iCompilationUnits = iPackageFragment.getCompilationUnits();
-						numberOfCompilationUnits += iCompilationUnits.length;
-					}
-				}
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-		return numberOfCompilationUnits;
-	}
 
 	public static List<AbstractTypeDeclaration> getRecursivelyInnerTypes(AbstractTypeDeclaration typeDeclaration) {
 		List<AbstractTypeDeclaration> innerTypeDeclarations = new ArrayList<AbstractTypeDeclaration>();
@@ -211,18 +57,6 @@ public class ASTReader {
 		}
 		return innerTypeDeclarations;
 	}
-
-//	private List<ClassObject> parseAST(ICompilationUnit iCompilationUnit) {
-//		ASTInformationGenerator.setCurrentCompilationUnit(iCompilationUnit);
-//		IFile iFile = (IFile)iCompilationUnit.getResource();
-//        ASTParser parser = ASTParser.newParser(JLS);
-//        parser.setKind(ASTParser.K_COMPILATION_UNIT);
-//        parser.setSource(iCompilationUnit);
-//        parser.setResolveBindings(true); // we need bindings later on
-//        CompilationUnit compilationUnit = (CompilationUnit)parser.createAST(null);
-//
-//        return parseAST(compilationUnit, iFile);
-//	}
 
 	private List<ClassObject> parseAST(CompilationUnit compilationUnit, IFile iFile) {
 //		ITextFileBufferManager bufferManager = FileBuffers.getTextFileBufferManager();
@@ -548,15 +382,26 @@ public class ASTReader {
 	}
 
 	public static void main(String[] args) throws IOException {
-		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
-		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+//		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
+//		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
 
-//		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
-//        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
+		String file = "/Users/Ferooz/Downloads/crawler4j/src/main/java/edu/uci/ics/crawler4j/crawler/WebCrawler.java";
+        String srcPath = "/Users/Ferooz/Downloads/crawler4j/src/main/java";
+        List<File> filesjar = new ArrayList<>();
+        File file1 = new File("/Users/Ferooz/Downloads/crawler4j/target/dependency/");
+        if(file1.exists() && file1.isDirectory()) {
+            filesjar =  (List<File>) FileUtils.listFiles(file1, new String[]{"jar"}, true);
+        }
 
+        List<String> classpathEntries = new ArrayList<>();
 
+        for(File f : filesjar){
+            classpathEntries.add(f.getAbsolutePath());
+        }
+        String[] classpath =  classpathEntries.toArray(new String[0]);
+        System.out.println(classpath.length);
 
-		CompilationUnit compilationUnit = createCompilationUnit(file, new String[]{srcPath}, null);
+		CompilationUnit compilationUnit = createCompilationUnit(file, new String[]{srcPath}, classpath);
 
 		CompilationUnitCache.compilationUnitList.add(compilationUnit);
         ASTInformationGenerator.setCurrentCompilationUnit(compilationUnit);
@@ -568,11 +413,11 @@ public class ASTReader {
 		System.out.println(classObjects.get(0));
 		System.out.println("\n\n");
 
-		CFG cfg = new CFG(classObjects.get(0).getMethodList().get(0));
+		CFG cfg = new CFG(classObjects.get(0).getMethodList().get(17));
         System.out.println(cfg);
 
-        PDG pdg = new PDG(cfg, null, classObjects.get(0).getFieldsAccessedInsideMethod(classObjects.get(0).getMethodList().get(0)), null);
+        PDG pdg = new PDG(cfg, null, classObjects.get(0).getFieldsAccessedInsideMethod(classObjects.get(0).getMethodList().get(17)), null);
 
-		System.out.println(cfg.getEdges());
-	}
+        System.out.println(pdg.getEdges());
+    }
 }

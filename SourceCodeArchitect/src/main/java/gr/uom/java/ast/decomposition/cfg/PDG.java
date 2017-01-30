@@ -1,30 +1,11 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import gr.uom.java.ast.AbstractMethodDeclaration;
-import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.LocalVariableDeclarationObject;
-import gr.uom.java.ast.ParameterObject;
-import gr.uom.java.ast.VariableDeclarationObject;
-
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
+import gr.uom.java.ast.*;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.LabeledStatement;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.*;
+
+import java.util.*;
 
 public class PDG extends Graph {
 	private CFG cfg;

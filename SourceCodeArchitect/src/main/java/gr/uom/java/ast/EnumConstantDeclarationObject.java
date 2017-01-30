@@ -1,11 +1,10 @@
 package gr.uom.java.ast;
 
 import gr.uom.java.ast.decomposition.AbstractExpression;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 
 public class EnumConstantDeclarationObject {
 	private String name;

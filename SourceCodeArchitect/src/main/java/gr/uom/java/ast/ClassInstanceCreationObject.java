@@ -1,12 +1,8 @@
 package gr.uom.java.ast;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+
+import java.util.*;
 
 public class ClassInstanceCreationObject extends CreationObject {
 

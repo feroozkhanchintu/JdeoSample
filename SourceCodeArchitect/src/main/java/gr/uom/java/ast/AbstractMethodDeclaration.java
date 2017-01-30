@@ -1,17 +1,11 @@
 package gr.uom.java.ast;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
 import gr.uom.java.ast.decomposition.MethodBodyObject;
 import gr.uom.java.ast.decomposition.cfg.AbstractVariable;
 import gr.uom.java.ast.decomposition.cfg.PlainVariable;
-
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+
+import java.util.*;
 
 public interface AbstractMethodDeclaration {
 

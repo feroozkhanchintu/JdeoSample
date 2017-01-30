@@ -2,16 +2,10 @@ package gr.uom.java.ast;
 
 import gr.uom.java.ast.decomposition.CatchClauseObject;
 import gr.uom.java.ast.decomposition.TryStatementObject;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ITypeRoot;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+
+import java.util.*;
 
 public abstract class ClassDeclarationObject {
 	protected String name;

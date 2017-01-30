@@ -1,9 +1,9 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import java.util.ListIterator;
-
 import gr.uom.java.ast.AbstractMethodDeclaration;
 import gr.uom.java.ast.ParameterObject;
+
+import java.util.ListIterator;
 
 public class PDGMethodEntryNode extends PDGNode {
 	private AbstractMethodDeclaration method;

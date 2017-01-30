@@ -1,9 +1,9 @@
 package gr.uom.java.ast.decomposition.cfg;
 
+import gr.uom.java.ast.decomposition.AbstractStatement;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import gr.uom.java.ast.decomposition.AbstractStatement;
 
 public class CFGBranchDoLoopNode extends CFGBranchNode {
 

@@ -1,9 +1,9 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import java.util.Set;
-
 import gr.uom.java.ast.FieldObject;
 import gr.uom.java.ast.VariableDeclarationObject;
+
+import java.util.Set;
 
 public class PDGExitNode extends PDGStatementNode {
 	private AbstractVariable returnedVariable;

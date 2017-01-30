@@ -1,8 +1,7 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import org.eclipse.jdt.core.dom.ContinueStatement;
-
 import gr.uom.java.ast.decomposition.AbstractStatement;
+import org.eclipse.jdt.core.dom.ContinueStatement;
 
 public class CFGContinueNode extends CFGNode {
 	private String label;

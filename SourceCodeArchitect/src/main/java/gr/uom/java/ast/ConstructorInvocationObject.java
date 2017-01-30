@@ -1,8 +1,8 @@
 package gr.uom.java.ast;
 
-import java.util.List;
-
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
+
+import java.util.List;
 
 public class ConstructorInvocationObject extends AbstractMethodInvocationObject {
 

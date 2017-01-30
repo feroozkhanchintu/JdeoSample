@@ -1,38 +1,14 @@
 package gr.uom.java.ast.decomposition.cfg;
 
-import gr.uom.java.ast.ASTReader;
 import gr.uom.java.ast.ClassInstanceCreationObject;
-import gr.uom.java.ast.ClassObject;
-import gr.uom.java.ast.ConstructorObject;
 import gr.uom.java.ast.CreationObject;
 import gr.uom.java.ast.FieldObject;
-import gr.uom.java.ast.MethodInvocationObject;
-import gr.uom.java.ast.MethodObject;
-import gr.uom.java.ast.SystemObject;
 import gr.uom.java.ast.VariableDeclarationObject;
 import gr.uom.java.ast.decomposition.AbstractStatement;
 import gr.uom.java.ast.util.ExpressionExtractor;
+import org.eclipse.jdt.core.dom.*;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.FieldAccess;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import java.util.*;
 
 public class PDGNode extends GraphNode implements Comparable<PDGNode> {
 	private CFGNode cfgNode;

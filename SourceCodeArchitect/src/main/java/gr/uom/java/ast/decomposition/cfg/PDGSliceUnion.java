@@ -1,16 +1,14 @@
 package gr.uom.java.ast.decomposition.cfg;
 
 import gr.uom.java.ast.AbstractMethodDeclaration;
-
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 public class PDGSliceUnion {
 	private PDG pdg;

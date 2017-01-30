@@ -166,51 +166,6 @@ public class SystemObject {
     }
 
 
-    public Set<ClassObject> getClassObjects(IPackageFragment packageFragment) {
-    	Set<ClassObject> classObjectSet = new LinkedHashSet<ClassObject>();
-    	try {
-    		ICompilationUnit[] packageCompilationUnits = packageFragment.getCompilationUnits();
-			for(ICompilationUnit iCompilationUnit : packageCompilationUnits) {
-				classObjectSet.addAll(getClassObjects(iCompilationUnit));
-			}
-    	} catch(JavaModelException e) {
-			e.printStackTrace();
-		}
-    	return classObjectSet;
-    }
-
-    public Set<ClassObject> getClassObjects(ICompilationUnit compilationUnit) {
-    	Set<ClassObject> classObjectSet = new LinkedHashSet<ClassObject>();
-		try {
-			IType[] topLevelTypes = compilationUnit.getTypes();
-			for(IType type : topLevelTypes) {
-				classObjectSet.addAll(getClassObjects(type));
-			}
-		} catch(JavaModelException e) {
-			e.printStackTrace();
-		}
-    	return classObjectSet;
-    }
-
-    public Set<ClassObject> getClassObjects(IType type) {
-    	Set<ClassObject> classObjectSet = new LinkedHashSet<ClassObject>();
-    	String typeQualifiedName = type.getFullyQualifiedName('.');
-    	ClassObject classObject = getClassObject(typeQualifiedName);
-    	if(classObject != null)
-    		classObjectSet.add(classObject);
-    	try {
-			IType[] nestedTypes = type.getTypes();
-			for(IType nestedType : nestedTypes) {
-				classObjectSet.addAll(getClassObjects(nestedType));
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		}
-    	return classObjectSet;
-    }
-
-
-
     public List<String> getClassNames() {
         List<String> names = new ArrayList<String>();
         for(int i=0; i<classList.size(); i++) {

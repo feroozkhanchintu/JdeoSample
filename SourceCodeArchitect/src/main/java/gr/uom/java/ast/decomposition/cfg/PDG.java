@@ -334,33 +334,34 @@ public class PDG extends Graph {
 		//key is the jump node and value is the innermost loop node
 		Map<PDGNode, PDGNode> jumpNodeMap = getInnerMostLoopNodesForJumpNodes();
 		for(PDGNode jumpNode : jumpNodeMap.keySet()) {
-			PDGNode innerMostLoopNode = jumpNodeMap.get(jumpNode);
-			CFGNode innerMostLoopCFGNode = innerMostLoopNode.getCFGNode();
-			if(innerMostLoopCFGNode instanceof CFGBranchLoopNode || innerMostLoopCFGNode instanceof CFGBranchDoLoopNode || innerMostLoopCFGNode instanceof CFGBranchSwitchNode) {
-				for(GraphEdge edge : innerMostLoopNode.outgoingEdges) {
-					PDGDependence dependence = (PDGDependence)edge;
-					if(dependence instanceof PDGControlDependence) {
-						PDGControlDependence controlDependence = (PDGControlDependence)dependence;
-						PDGNode dstPDGNode = (PDGNode)controlDependence.dst;
-						if(dstPDGNode.getId() > jumpNode.getId()) {
-							PDGControlDependence cd = new PDGControlDependence(jumpNode, dstPDGNode, false);
-							edges.add(cd);
-						}
-					}
-				}
-				PDGControlDependence cd = new PDGControlDependence(jumpNode, innerMostLoopNode, false);
-				edges.add(cd);
-				CFGNode jumpCFGNode = jumpNode.getCFGNode();
-				if(jumpCFGNode instanceof CFGBreakNode) {
-					CFGBreakNode breakNode = (CFGBreakNode)jumpCFGNode;
-					breakNode.setInnerMostLoopNode(innerMostLoopCFGNode);
-				}
-				else if(jumpCFGNode instanceof CFGContinueNode) {
-					CFGContinueNode continueNode = (CFGContinueNode)jumpCFGNode;
-					continueNode.setInnerMostLoopNode(innerMostLoopCFGNode);
-				}
-			}
-		}
+            PDGNode innerMostLoopNode = jumpNodeMap.get(jumpNode);
+            if (innerMostLoopNode != null) {
+                CFGNode innerMostLoopCFGNode = innerMostLoopNode.getCFGNode();
+                if (innerMostLoopCFGNode instanceof CFGBranchLoopNode || innerMostLoopCFGNode instanceof CFGBranchDoLoopNode || innerMostLoopCFGNode instanceof CFGBranchSwitchNode) {
+                    for (GraphEdge edge : innerMostLoopNode.outgoingEdges) {
+                        PDGDependence dependence = (PDGDependence) edge;
+                        if (dependence instanceof PDGControlDependence) {
+                            PDGControlDependence controlDependence = (PDGControlDependence) dependence;
+                            PDGNode dstPDGNode = (PDGNode) controlDependence.dst;
+                            if (dstPDGNode.getId() > jumpNode.getId()) {
+                                PDGControlDependence cd = new PDGControlDependence(jumpNode, dstPDGNode, false);
+                                edges.add(cd);
+                            }
+                        }
+                    }
+                    PDGControlDependence cd = new PDGControlDependence(jumpNode, innerMostLoopNode, false);
+                    edges.add(cd);
+                    CFGNode jumpCFGNode = jumpNode.getCFGNode();
+                    if (jumpCFGNode instanceof CFGBreakNode) {
+                        CFGBreakNode breakNode = (CFGBreakNode) jumpCFGNode;
+                        breakNode.setInnerMostLoopNode(innerMostLoopCFGNode);
+                    } else if (jumpCFGNode instanceof CFGContinueNode) {
+                        CFGContinueNode continueNode = (CFGContinueNode) jumpCFGNode;
+                        continueNode.setInnerMostLoopNode(innerMostLoopCFGNode);
+                    }
+                }
+            }
+        }
 	}
 
 	private Map<PDGNode, PDGNode> getInnerMostLoopNodesForJumpNodes() {

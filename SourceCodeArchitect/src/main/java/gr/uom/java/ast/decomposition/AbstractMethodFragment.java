@@ -261,6 +261,8 @@ public abstract class AbstractMethodFragment {
 
 	protected void processConstructorInvocation(ConstructorInvocation constructorInvocation) {
 		IMethodBinding methodBinding = constructorInvocation.resolveConstructorBinding();
+        if(methodBinding == null)
+            return;
 		String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
 		TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
 		String methodInvocationName = methodBinding.getName();
@@ -302,7 +304,9 @@ public abstract class AbstractMethodFragment {
 			if(expression instanceof MethodInvocation) {
 				MethodInvocation methodInvocation = (MethodInvocation)expression;
 				IMethodBinding methodBinding = methodInvocation.resolveMethodBinding();
-				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
+                if(methodBinding == null)
+                    continue;
+                String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
 				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
 				String methodInvocationName = methodBinding.getName();
 				String qualifiedName = methodBinding.getReturnType().getQualifiedName();
@@ -364,6 +368,8 @@ public abstract class AbstractMethodFragment {
 			else if(expression instanceof SuperMethodInvocation) {
 				SuperMethodInvocation superMethodInvocation = (SuperMethodInvocation)expression;
 				IMethodBinding methodBinding = superMethodInvocation.resolveMethodBinding();
+				if(methodBinding == null)
+				    continue;
 				String originClassName = methodBinding.getDeclaringClass().getQualifiedName();
 				TypeObject originClassTypeObject = TypeObject.extractTypeObject(originClassName);
 				String methodInvocationName = methodBinding.getName();

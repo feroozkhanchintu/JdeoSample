@@ -25,7 +25,7 @@ public class CFG extends Graph {
 		MethodBodyObject methodBody = method.getMethodBody();
 		if(methodBody != null) {
 			CompositeStatementObject composite = methodBody.getCompositeStatement();
-			process(new ArrayList<CFGNode>(), composite);
+            process(new ArrayList<CFGNode>(), composite);
 			GraphNode.resetNodeNum();
 			this.basicBlockCFG = new BasicBlockCFG(this);
 		}
@@ -162,6 +162,9 @@ public class CFG extends Graph {
 			directlyNestedNodesInBlocks.put(tryNode, new ArrayList<CFGNode>());
 			AbstractStatement firstStatement = compositeStatement.getStatements().get(0);
 			previousNodes = process(previousNodes, (CompositeStatementObject)firstStatement);
+			if(tryStatement.getFinallyClause() != null){
+				previousNodes = process(previousNodes, tryStatement.getFinallyClause());
+			}
 		}
 		else {
 			//if a try node has resources, it is treated as a non-composite node

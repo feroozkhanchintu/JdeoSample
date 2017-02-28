@@ -385,11 +385,10 @@ public class ASTReader {
 
 
     public static void main(String[] args) throws IOException {
-        String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
-		String srcPath = "/Users/Ferooz/Documents/Workspaces/TestJdeo";
+        String file = "/Users/Ferooz/Downloads/crawler4j-master/src/main/java/edu/uci/ics/crawler4j/crawler/Page.java";
+		String srcPath = "/Users/Ferooz/Downloads/crawler4j-master";
 
         CompilationUnit compilationUnit = createCompilationUnit(file, new String[]{srcPath}, null);
-
         CompilationUnitCache.compilationUnitList.add(compilationUnit);
         ASTInformationGenerator.setCurrentCompilationUnit(compilationUnit);
 
@@ -408,6 +407,7 @@ public class ASTReader {
             }
         }
     }
+
 
 //    public static void main(String[] args) throws IOException {
 ////		String file = "/Users/Ferooz/Documents/Workspaces/TestJdeo/eclipse.commandline/src/eclipse/commandline/Test.java";
